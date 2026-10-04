@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Admin Control - Smart Attendance
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/style.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<nav>
+
+    <h2>
+        Smart Attendance
+    </h2>
+
+    <div>
+
+        <a href="{{ url_for('dashboard.index') }}">
+            Dashboard
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a href="{{ url_for('students.index') }}">
+            Students
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a href="{{ url_for('attendance.index') }}">
+            Attendance
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<div class="dashboard">
+
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                Admin Control
+            </h1>
+
+            <p>
+                Manage application users and permissions.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CREATE USER -->
+
+    <div class="card">
+
+        <h2>
+            Create User
+        </h2>
+
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'admin.create_user'
+            ) }}"
+        >
+
+            <div class="admin-form-grid">
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                >
+
+                <select name="role">
+
+                    <option value="staff">
+                        Staff
+                    </option>
+
+                    <option value="admin">
+                        Administrator
+                    </option>
+
+                </select>
+
+                <button type="submit">
+                    Create User
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- USERS -->
+
+    <div class="card">
+
+        <h2>
+            System Users
+        </h2>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Username
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for user in users %}
+
+                    <tr>
+
+                        <td>
+                            {{ user.username }}
+                        </td>
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'admin.change_role',
+                                    user_id=user.id
+                                ) }}"
+                            >
+
+                                <select
+                                    name="role"
+                                    onchange="this.form.submit()"
+                                    {% if user.id == current_user.id %}
+                                    disabled
+                                    {% endif %}
+                                >
+
+                                    <option
+                                        value="staff"
+                                        {% if user.role == "staff" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Staff
+                                    </option>
+
+                                    <option
+                                        value="admin"
+                                        {% if user.role == "admin" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Administrator
+                                    </option>
+
+                                </select>
+
+                            </form>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if user.active %}
+
+                                <span class="status-active">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-disabled">
+                                    Disabled
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if user.id != current_user.id %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'admin.toggle_user',
+                                    user_id=user.id
+                                ) }}"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="edit-button"
+                                >
+
+                                    {% if user.active %}
+                                        Disable
+                                    {% else %}
+                                        Enable
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+                            {% else %}
+
+                                <span>
+                                    Current Account
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>

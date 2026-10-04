@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Register Face - Smart Attendance</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVIGATION
+====================================================== -->
+
+<nav>
+
+    <div>
+
+        <h2>
+            Smart Attendance
+        </h2>
+
+    </div>
+
+
+    <div>
+
+        <a
+            href="{{ url_for('dashboard.index') }}"
+        >
+            Dashboard
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a
+            href="{{ url_for('students.index') }}"
+        >
+            Students
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+
+<div class="dashboard">
+
+
+    <div class="card face-registration-card">
+
+
+        <h1>
+            Register Face
+        </h1>
+
+
+        <div class="student-information">
+
+            <h2>
+                {{ student.name }}
+            </h2>
+
+            <p>
+
+                Student ID:
+
+                <strong>
+                    {{ student.student_id }}
+                </strong>
+
+            </p>
+
+            <p>
+
+                Course:
+
+                <strong>
+                    {{ student.course or "-" }}
+                </strong>
+
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CAMERA
+        ================================================== -->
+
+        <div class="camera-container">
+
+            <video
+                id="camera"
+                autoplay
+                playsinline
+            ></video>
+
+        </div>
+
+
+
+        <canvas
+            id="canvas"
+            width="640"
+            height="480"
+            style="display:none;"
+        ></canvas>
+
+
+
+        <!-- =================================================
+             CONTROLS
+        ================================================== -->
+
+        <div class="camera-controls">
+
+            <button
+                type="button"
+                id="startCamera"
+            >
+                Start Camera
+            </button>
+
+
+            <button
+                type="button"
+                id="captureButton"
+                disabled
+            >
+                Capture Face
+            </button>
+
+
+            <button
+                type="button"
+                id="stopCamera"
+                disabled
+            >
+                Stop Camera
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATUS
+        ================================================== -->
+
+        <div
+            id="status"
+            class="status-message"
+        >
+            Camera not started.
+        </div>
+
+
+
+        <!-- =================================================
+             SAMPLE COUNTER
+        ================================================== -->
+
+        <div class="sample-counter">
+
+            <strong>
+                Face Samples Saved:
+            </strong>
+
+            <span id="sampleCount">
+                {{ sample_count }}
+            </span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INSTRUCTIONS
+        ================================================== -->
+
+        <div class="instructions">
+
+            <h3>
+                Registration Instructions
+            </h3>
+
+            <ol>
+
+                <li>
+                    Click <strong>Start Camera</strong>.
+                </li>
+
+                <li>
+                    Keep only one person in the camera.
+                </li>
+
+                <li>
+                    Keep your face clearly visible.
+                </li>
+
+                <li>
+                    Click <strong>Capture Face</strong>.
+                </li>
+
+                <li>
+                    Change your head angle slightly.
+                </li>
+
+                <li>
+                    Capture another sample.
+                </li>
+
+                <li>
+                    Capture at least 5 samples.
+                </li>
+
+            </ol>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+
+const video =
+    document.getElementById("camera");
+
+
+const canvas =
+    document.getElementById("canvas");
+
+
+const startButton =
+    document.getElementById("startCamera");
+
+
+const captureButton =
+    document.getElementById("captureButton");
+
+
+const stopButton =
+    document.getElementById("stopCamera");
+
+
+const status =
+    document.getElementById("status");
+
+
+const sampleCount =
+    document.getElementById("sampleCount");
+
+
+let cameraStream = null;
+
+
+
+// ========================================================
+// START CAMERA
+// ========================================================
+
+startButton.addEventListener(
+    "click",
+    async function () {
+
+        try {
+
+            cameraStream =
+                await navigator.mediaDevices.getUserMedia(
+                    {
+                        video: {
+                            width: {
+                                ideal: 640
+                            },
+
+                            height: {
+                                ideal: 480
+                            },
+
+                            facingMode: "user"
+                        },
+
+                        audio: false
+                    }
+                );
+
+
+            video.srcObject =
+                cameraStream;
+
+
+            captureButton.disabled =
+                false;
+
+
+            stopButton.disabled =
+                false;
+
+
+            startButton.disabled =
+                true;
+
+
+            status.innerText =
+                "Camera started. Position your face in the center.";
+
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            status.innerText =
+                "Camera access failed. Please allow camera permission.";
+
+
+            alert(
+                "Camera access failed. Please allow camera permission in your browser."
+            );
+
+        }
+
+    }
+);
+
+
+
+// ========================================================
+// STOP CAMERA
+// ========================================================
+
+stopButton.addEventListener(
+    "click",
+    function () {
+
+        stopCamera();
+
+    }
+);
+
+
+
+function stopCamera() {
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                function (track) {
+
+                    track.stop();
+
+                }
+            );
+
+        cameraStream = null;
+
+    }
+
+
+    video.srcObject = null;
+
+
+    captureButton.disabled =
+        true;
+
+
+    stopButton.disabled =
+        true;
+
+
+    startButton.disabled =
+        false;
+
+
+    status.innerText =
+        "Camera stopped.";
+
+}
+
+
+
+// ========================================================
+// CAPTURE FACE
+// ========================================================
+
+captureButton.addEventListener(
+    "click",
+    async function () {
+
+        if (!cameraStream) {
+
+            status.innerText =
+                "Start the camera first.";
+
+            return;
+
+        }
+
+
+        status.innerText =
+            "Capturing and processing face...";
+
+
+        captureButton.disabled =
+            true;
+
+
+
+        const context =
+            canvas.getContext("2d");
+
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+
+        canvas.toBlob(
+            async function (blob) {
+
+                if (!blob) {
+
+                    status.innerText =
+                        "Could not capture image.";
+
+                    captureButton.disabled =
+                        false;
+
+                    return;
+
+                }
+
+
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "image",
+                    blob,
+                    "face.jpg"
+                );
+
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/students/{{ student.id }}/capture-face",
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+
+                    const data =
+                        await response.json();
+
+
+
+                    if (data.success) {
+
+                        status.innerText =
+                            "✓ " + data.message;
+
+
+                        sampleCount.innerText =
+                            data.sample_count;
+
+
+
+                        if (
+                            data.sample_count >= 5
+                        ) {
+
+                            status.innerText =
+                                "✓ Registration looks good. 5 or more samples saved.";
+
+                        }
+
+                    }
+
+                    else {
+
+                        status.innerText =
+                            "⚠ " + data.message;
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(error);
+
+
+                    status.innerText =
+                        "Server error while processing the face.";
+
+                }
+
+
+                captureButton.disabled =
+                    false;
+
+
+            },
+
+            "image/jpeg",
+
+            0.90
+        );
+
+    }
+);
+
+
+
+// ========================================================
+// CLEAN UP CAMERA WHEN LEAVING PAGE
+// ========================================================
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        stopCamera();
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>

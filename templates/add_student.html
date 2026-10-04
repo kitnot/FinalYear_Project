@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Student - Smart Attendance</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<nav>
+
+    <h2>
+        Smart Attendance
+    </h2>
+
+
+    <div>
+
+        <a href="{{ url_for('dashboard.index') }}">
+            Dashboard
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a href="{{ url_for('students.index') }}">
+            Students
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<div class="dashboard">
+
+
+    <div class="card form-card">
+
+
+        <h1>
+            Add Student
+        </h1>
+
+
+        <p>
+            Enter the student's information.
+        </p>
+
+
+        <form method="POST">
+
+
+            <label>
+                Student ID *
+            </label>
+
+            <input
+                type="text"
+                name="student_id"
+                placeholder="Example: 24BIT41"
+                required
+            >
+
+
+
+            <label>
+                Student Name *
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                required
+            >
+
+
+
+            <label>
+                Email
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                placeholder="student@example.com"
+            >
+
+
+
+            <label>
+                Phone
+            </label>
+
+            <input
+                type="text"
+                name="phone"
+                placeholder="Phone Number"
+            >
+
+
+
+            <label>
+                Course
+            </label>
+
+            <input
+                type="text"
+                name="course"
+                placeholder="BSc IT"
+            >
+
+
+
+            <label>
+                Semester
+            </label>
+
+            <input
+                type="text"
+                name="semester"
+                placeholder="VI"
+            >
+
+
+
+            <label>
+                Division
+            </label>
+
+            <input
+                type="text"
+                name="division"
+                placeholder="A"
+            >
+
+
+
+            <div class="form-buttons">
+
+                <a
+                    href="{{ url_for('students.index') }}"
+                >
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                    >
+                        Cancel
+                    </button>
+
+                </a>
+
+
+                <button
+                    type="submit"
+                >
+                    Add Student
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

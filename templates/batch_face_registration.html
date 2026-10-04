@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Batch Face Registration - Smart Attendance
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37,99,235,0.12),
+                    transparent 35%
+                ),
+                #f4f7fb;
+
+            color: #0f172a;
+        }
+
+
+        /* ==============================
+           NAVBAR
+        ============================== */
+
+        nav {
+            background: #0f172a;
+
+            padding: 16px 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            box-shadow:
+                0 4px 18px
+                rgba(0,0,0,0.18);
+        }
+
+
+        .brand {
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+
+        .nav-links {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+
+        .nav-links a {
+            color: white;
+
+            text-decoration: none;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+        }
+
+
+        .nav-links a:hover {
+            background:
+                rgba(255,255,255,0.12);
+        }
+
+
+        /* ==============================
+           CONTAINER
+        ============================== */
+
+        .container {
+            width: min(
+                1400px,
+                calc(100% - 40px)
+            );
+
+            margin: 30px auto;
+        }
+
+
+        h1 {
+            margin-top: 0;
+
+            font-size: 32px;
+        }
+
+
+        .subtitle {
+            color: #64748b;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ==============================
+           GRID
+        ============================== */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                300px
+                minmax(0,1fr);
+
+            gap: 20px;
+        }
+
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(15,23,42,0.08);
+        }
+
+
+        /* ==============================
+           STUDENT LIST
+        ============================== */
+
+        .student-list {
+            max-height: 650px;
+
+            overflow-y: auto;
+        }
+
+
+        .student-button {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            padding: 12px;
+
+            margin-bottom: 7px;
+
+            border:
+                1px solid #e2e8f0;
+
+            border-radius: 9px;
+
+            background: white;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            transition:
+                0.2s;
+        }
+
+
+        .student-button:hover {
+            background: #f8fafc;
+
+            border-color: #93c5fd;
+        }
+
+
+        .student-button.selected {
+            background: #dbeafe;
+
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(37,99,235,0.1);
+        }
+
+
+        .student-id {
+            color: #2563eb;
+
+            font-weight: 700;
+
+            font-size: 13px;
+        }
+
+
+        .student-name {
+            margin-top: 4px;
+
+            color: #0f172a;
+        }
+
+
+        .sample-badge {
+            min-width: 35px;
+
+            text-align: center;
+
+            padding: 5px 8px;
+
+            border-radius: 20px;
+
+            background: #e2e8f0;
+
+            color: #334155;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .sample-badge.complete {
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+
+        /* ==============================
+           CAMERA
+        ============================== */
+
+        .camera-box {
+            background: #020617;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            position: relative;
+
+            max-width: 800px;
+
+            margin: auto;
+        }
+
+
+        #video {
+            display: block;
+
+            width: 100%;
+
+            height: 500px;
+
+            object-fit: cover;
+        }
+
+
+        .camera-label {
+            position: absolute;
+
+            top: 15px;
+
+            left: 15px;
+
+            background:
+                rgba(0,0,0,0.65);
+
+            color: white;
+
+            padding: 8px 12px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+        }
+
+
+        /* ==============================
+           CURRENT STUDENT
+        ============================== */
+
+        .current-student {
+            text-align: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        #currentName {
+            font-size: 25px;
+
+            margin-bottom: 5px;
+        }
+
+
+        #currentId {
+            color: #64748b;
+
+            margin-top: 0;
+        }
+
+
+        /* ==============================
+           PROGRESS
+        ============================== */
+
+        .sample-title {
+            text-align: center;
+
+            margin-top: 20px;
+        }
+
+
+        #sampleCount {
+            color: #2563eb;
+        }
+
+
+        .progress-container {
+            height: 14px;
+
+            max-width: 600px;
+
+            margin: 15px auto;
+
+            background: #e2e8f0;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+
+        #sampleProgress {
+            height: 100%;
+
+            width: 0%;
+
+            background: #2563eb;
+
+            transition:
+                width 0.3s ease;
+        }
+
+
+        /* ==============================
+           BUTTONS
+        ============================== */
+
+        .buttons {
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-top: 18px;
+        }
+
+
+        button {
+            border: none;
+
+            padding: 12px 18px;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        button:hover:not(:disabled) {
+            transform:
+                translateY(-1px);
+        }
+
+
+        button:disabled {
+            opacity: 0.5;
+
+            cursor: not-allowed;
+        }
+
+
+        #nextButton {
+            background: #16a34a;
+        }
+
+
+        #message {
+            max-width: 700px;
+
+            margin: 15px auto 0;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            background: #f1f5f9;
+
+            text-align: center;
+        }
+
+
+        /* ==============================
+           OVERALL PROGRESS
+        ============================== */
+
+        .overall {
+            margin-bottom: 20px;
+
+            background: #eff6ff;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            text-align: center;
+        }
+
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (max-width: 900px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            #video {
+                height: 400px;
+            }
+
+
+            nav {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .container {
+                width:
+                    calc(100% - 20px);
+
+                margin: 15px auto;
+            }
+
+
+            #video {
+                height: 300px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==============================
+     NAVIGATION
+============================== -->
+
+<nav>
+
+    <div class="brand">
+        Smart Attendance
+    </div>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('dashboard.index') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('students.index') }}">
+            Students
+        </a>
+
+        <a href="{{ url_for('attendance.index') }}">
+            Attendance
+        </a>
+
+        {% if current_user.is_authenticated and current_user.is_admin %}
+
+        <a href="{{ url_for('admin.index') }}">
+            Admin
+        </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ==============================
+     MAIN
+============================== -->
+
+<div class="container">
+
+
+    <h1>
+        👤 Batch Face Registration
+    </h1>
+
+
+    <p class="subtitle">
+        Register five face samples for each student.
+        The camera stays active while you move through the class.
+    </p>
+
+
+    {% if students %}
+
+
+    <div class="overall">
+
+        <strong>
+            Total Students:
+        </strong>
+
+        {{ students|length }}
+
+        &nbsp;&nbsp; | &nbsp;&nbsp;
+
+        <strong>
+            Registration:
+        </strong>
+
+        <span id="overallProgress">
+            0 / {{ students|length }}
+        </span>
+
+    </div>
+
+
+    <div class="grid">
+
+
+        <!-- ==========================
+             STUDENT LIST
+        =========================== -->
+
+        <div class="card">
+
+
+            <h2>
+                Students
+            </h2>
+
+
+            <div class="student-list">
+
+
+                {% for student in students %}
+
+                <button
+                    type="button"
+                    class="student-button"
+                    id="studentButton-{{ loop.index0 }}"
+                    onclick="
+                        selectStudent(
+                            {{ loop.index0 }}
+                        )
+                    "
+                >
+
+                    <span>
+
+                        <span class="student-id">
+                            {{ student.student_id }}
+                        </span>
+
+                        <br>
+
+                        <span class="student-name">
+                            {{ student.name }}
+                        </span>
+
+                    </span>
+
+
+                    <span
+                        class="
+                            sample-badge
+                            {% if student.sample_count >= 5 %}
+                                complete
+                            {% endif %}
+                        "
+                        id="badge-{{ loop.index0 }}"
+                    >
+                        {{ student.sample_count }}/5
+                    </span>
+
+                </button>
+
+                {% endfor %}
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ==========================
+             CAMERA
+        =========================== -->
+
+        <div class="card">
+
+
+            <div class="current-student">
+
+
+                <h2 id="currentName">
+                    -
+                </h2>
+
+
+                <p id="currentId">
+                    Select a student
+                </p>
+
+
+            </div>
+
+
+            <div class="camera-box">
+
+
+                <div class="camera-label">
+                    FACE REGISTRATION
+                </div>
+
+
+                <video
+                    id="video"
+                    autoplay
+                    playsinline
+                    muted
+                ></video>
+
+
+            </div>
+
+
+            <canvas
+                id="canvas"
+                style="display:none;"
+            ></canvas>
+
+
+            <h2 class="sample-title">
+
+                Samples:
+
+                <span id="sampleCount">
+                    0
+                </span>
+
+                / 5
+
+            </h2>
+
+
+            <div class="progress-container">
+
+                <div
+                    id="sampleProgress"
+                ></div>
+
+            </div>
+
+
+            <div class="buttons">
+
+
+                <button
+                    id="captureButton"
+                    type="button"
+                    onclick="captureSample()"
+                >
+                    📸 Capture Sample
+                </button>
+
+
+                <button
+                    id="nextButton"
+                    type="button"
+                    onclick="nextStudent()"
+                    disabled
+                >
+                    Next Student →
+                </button>
+
+
+            </div>
+
+
+            <div id="message">
+
+                Starting camera...
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    {% else %}
+
+
+    <div class="card">
+
+        <div style="
+            text-align:center;
+            padding:50px;
+        ">
+
+            <div style="font-size:50px;">
+                👥
+            </div>
+
+            <h2>
+                No students found
+            </h2>
+
+            <p>
+                Import your class first.
+            </p>
+
+            <a
+                href="{{ url_for(
+                    'students.import_class'
+                ) }}"
+                style="
+                    display:inline-block;
+                    padding:12px 20px;
+                    background:#2563eb;
+                    color:white;
+                    text-decoration:none;
+                    border-radius:8px;
+                "
+            >
+                📥 Import Class
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<script>
+
+
+// ============================================================
+// STUDENT DATA
+// ============================================================
+
+const students =
+    {{ students | tojson }};
+
+
+const REQUIRED_SAMPLES =
+    5;
+
+
+let currentIndex =
+    0;
+
+
+let currentCount =
+    0;
+
+
+let cameraStream =
+    null;
+
+
+let cameraStarted =
+    false;
+
+
+// ============================================================
+// ELEMENTS
+// ============================================================
+
+const video =
+    document.getElementById(
+        "video"
+    );
+
+
+const canvas =
+    document.getElementById(
+        "canvas"
+    );
+
+
+const currentName =
+    document.getElementById(
+        "currentName"
+    );
+
+
+const currentId =
+    document.getElementById(
+        "currentId"
+    );
+
+
+const sampleCount =
+    document.getElementById(
+        "sampleCount"
+    );
+
+
+const sampleProgress =
+    document.getElementById(
+        "sampleProgress"
+    );
+
+
+const captureButton =
+    document.getElementById(
+        "captureButton"
+    );
+
+
+const nextButton =
+    document.getElementById(
+        "nextButton"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+const overallProgress =
+    document.getElementById(
+        "overallProgress"
+    );
+
+
+// ============================================================
+// CAMERA
+// ============================================================
+
+async function startCamera() {
+
+    if (
+        cameraStarted
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        cameraStream =
+            await navigator
+            .mediaDevices
+            .getUserMedia({
+
+                video: {
+
+                    width: {
+                        ideal: 640
+                    },
+
+                    height: {
+                        ideal: 480
+                    },
+
+                    facingMode: "user"
+
+                },
+
+                audio: false
+
+            });
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        cameraStarted =
+            true;
+
+
+        message.textContent =
+            "✓ Camera ready. Position the student's face and capture a sample.";
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        message.textContent =
+            "Camera error: " +
+            error.message;
+
+        message.style.background =
+            "#fee2e2";
+
+        message.style.color =
+            "#991b1b";
+
+    }
+
+}
+
+
+// ============================================================
+// SELECT STUDENT
+// ============================================================
+
+function selectStudent(
+    index
+) {
+
+    if (
+        !students[index]
+    ) {
+
+        return;
+
+    }
+
+
+    currentIndex =
+        index;
+
+
+    const student =
+        students[
+            currentIndex
+        ];
+
+
+    currentCount =
+        Number(
+            student.sample_count || 0
+        );
+
+
+    currentName.textContent =
+        student.name;
+
+
+    currentId.textContent =
+        student.student_id;
+
+
+    updateProgress();
+
+
+    updateStudentButtons();
+
+
+    if (
+        currentCount >=
+        REQUIRED_SAMPLES
+    ) {
+
+        captureButton.disabled =
+            true;
+
+
+        nextButton.disabled =
+            false;
+
+
+        message.textContent =
+            "✓ This student's face registration is complete.";
+
+    } else {
+
+        captureButton.disabled =
+            false;
+
+
+        nextButton.disabled =
+            true;
+
+
+        message.textContent =
+            "Position the face clearly inside the camera.";
+
+    }
+
+
+    startCamera();
+
+}
+
+
+// ============================================================
+// UPDATE PROGRESS
+// ============================================================
+
+function updateProgress() {
+
+    sampleCount.textContent =
+        currentCount;
+
+
+    const percentage =
+        Math.min(
+
+            (
+                currentCount /
+                REQUIRED_SAMPLES
+            ) * 100,
+
+            100
+
+        );
+
+
+    sampleProgress.style.width =
+        percentage + "%";
+
+
+    const badge =
+        document.getElementById(
+            "badge-" +
+            currentIndex
+        );
+
+
+    if (badge) {
+
+        badge.textContent =
+            currentCount +
+            "/5";
+
+
+        if (
+            currentCount >=
+            REQUIRED_SAMPLES
+        ) {
+
+            badge.classList.add(
+                "complete"
+            );
+
+        } else {
+
+            badge.classList.remove(
+                "complete"
+            );
+
+        }
+
+    }
+
+
+    updateOverallProgress();
+
+}
+
+
+// ============================================================
+// OVERALL PROGRESS
+// ============================================================
+
+function updateOverallProgress() {
+
+    let completed =
+        0;
+
+
+    students.forEach(
+        function(student) {
+
+            if (
+                Number(
+                    student.sample_count || 0
+                ) >= REQUIRED_SAMPLES
+            ) {
+
+                completed++;
+
+            }
+
+        }
+    );
+
+
+    overallProgress.textContent =
+        completed +
+        " / " +
+        students.length;
+
+}
+
+
+// ============================================================
+// UPDATE STUDENT BUTTONS
+// ============================================================
+
+function updateStudentButtons() {
+
+    document
+        .querySelectorAll(
+            ".student-button"
+        )
+        .forEach(
+            function(button, index) {
+
+                if (
+                    index ===
+                    currentIndex
+                ) {
+
+                    button.classList.add(
+                        "selected"
+                    );
+
+                } else {
+
+                    button.classList.remove(
+                        "selected"
+                    );
+
+                }
+
+            }
+        );
+
+}
+
+
+// ============================================================
+// CAPTURE SAMPLE
+// ============================================================
+
+async function captureSample() {
+
+    if (
+        !cameraStarted
+    ) {
+
+        message.textContent =
+            "Camera is not ready.";
+
+        return;
+
+    }
+
+
+    if (
+        currentCount >=
+        REQUIRED_SAMPLES
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        video.readyState < 2 ||
+        video.videoWidth === 0
+    ) {
+
+        message.textContent =
+            "Waiting for camera...";
+
+        return;
+
+    }
+
+
+    captureButton.disabled =
+        true;
+
+
+    message.textContent =
+        "⏳ Capturing face sample...";
+
+
+    canvas.width =
+        video.videoWidth;
+
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    context.drawImage(
+
+        video,
+
+        0,
+        0,
+
+        canvas.width,
+        canvas.height
+
+    );
+
+
+    canvas.toBlob(
+
+        async function(blob) {
+
+            try {
+
+                if (!blob) {
+
+                    throw new Error(
+                        "Could not capture camera image."
+                    );
+
+                }
+
+
+                const student =
+                    students[
+                        currentIndex
+                    ];
+
+
+                const formData =
+                    new FormData();
+
+
+                formData.append(
+                    "image",
+                    blob,
+                    "face.jpg"
+                );
+
+
+                const response =
+                    await fetch(
+
+                        "/students/" +
+                        student.id +
+                        "/capture-face",
+
+                        {
+
+                            method:
+                                "POST",
+
+                            body:
+                                formData
+
+                        }
+
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server returned HTTP " +
+                        response.status
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    data.success
+                ) {
+
+                    currentCount =
+                        Number(
+                            data.sample_count
+                        );
+
+
+                    student.sample_count =
+                        currentCount;
+
+
+                    updateProgress();
+
+
+                    if (
+                        currentCount >=
+                        REQUIRED_SAMPLES
+                    ) {
+
+                        captureButton.disabled =
+                            true;
+
+
+                        nextButton.disabled =
+                            false;
+
+
+                        message.style.background =
+                            "#dcfce7";
+
+
+                        message.style.color =
+                            "#166534";
+
+
+                        message.textContent =
+                            "✓ Complete! Click Next Student.";
+
+                    } else {
+
+                        captureButton.disabled =
+                            false;
+
+
+                        message.style.background =
+                            "#f1f5f9";
+
+
+                        message.style.color =
+                            "#0f172a";
+
+
+                        message.textContent =
+                            "✓ Sample saved. Capture the next sample.";
+
+                    }
+
+                } else {
+
+                    captureButton.disabled =
+                        false;
+
+
+                    message.style.background =
+                        "#fee2e2";
+
+
+                    message.style.color =
+                        "#991b1b";
+
+
+                    message.textContent =
+                        data.message ||
+                        "Face capture failed.";
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+
+                captureButton.disabled =
+                    false;
+
+
+                message.style.background =
+                    "#fee2e2";
+
+
+                message.style.color =
+                    "#991b1b";
+
+
+                message.textContent =
+                    "Error: " +
+                    error.message;
+
+            }
+
+        },
+
+        "image/jpeg",
+
+        0.90
+
+    );
+
+}
+
+
+// ============================================================
+// NEXT STUDENT
+// ============================================================
+
+function nextStudent() {
+
+    if (
+        currentCount <
+        REQUIRED_SAMPLES
+    ) {
+
+        message.textContent =
+            "Capture all 5 samples first.";
+
+        return;
+
+    }
+
+
+    if (
+        currentIndex <
+        students.length - 1
+    ) {
+
+        selectStudent(
+            currentIndex + 1
+        );
+
+        return;
+
+    }
+
+
+    // Completed all
+
+    captureButton.disabled =
+        true;
+
+
+    nextButton.disabled =
+        true;
+
+
+    message.style.background =
+        "#dcfce7";
+
+
+    message.style.color =
+        "#166534";
+
+
+    message.textContent =
+        "🎉 All students have completed face registration!";
+
+
+    updateOverallProgress();
+
+}
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+if (
+    students.length > 0
+) {
+
+    selectStudent(0);
+
+}
+
+
+// ============================================================
+// CLEANUP
+// ============================================================
+
+window.addEventListener(
+    "beforeunload",
+    function() {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(
+                    function(track) {
+
+                        track.stop();
+
+                    }
+                );
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Continuous Attendance - Smart Attendance
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37, 99, 235, 0.12),
+                    transparent 35%
+                ),
+                #f4f7fb;
+
+            color: #0f172a;
+        }
+
+
+        /* ==============================
+           NAVBAR
+        ============================== */
+
+        nav {
+            background: #0f172a;
+
+            padding: 16px 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            box-shadow:
+                0 4px 18px
+                rgba(0, 0, 0, 0.18);
+        }
+
+
+        nav .brand {
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+
+        nav .links {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+
+        nav a {
+            color: white;
+
+            text-decoration: none;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            transition:
+                background 0.2s,
+                transform 0.2s;
+        }
+
+
+        nav a:hover {
+            background: rgba(
+                255,
+                255,
+                255,
+                0.12
+            );
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* ==============================
+           MAIN
+        ============================== */
+
+        .container {
+            width: min(
+                1400px,
+                calc(100% - 40px)
+            );
+
+            margin: 30px auto;
+        }
+
+
+        h1 {
+            margin-top: 0;
+
+            font-size: 32px;
+        }
+
+
+        .subtitle {
+            color: #64748b;
+
+            margin-top: -10px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ==============================
+           LAYOUT
+        ============================== */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 2fr)
+                minmax(300px, 1fr);
+
+            gap: 20px;
+        }
+
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(15, 23, 42, 0.08);
+
+            animation:
+                pageEnter
+                0.35s
+                ease;
+        }
+
+
+        @keyframes pageEnter {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+
+        /* ==============================
+           CAMERA
+        ============================== */
+
+        .camera-box {
+            position: relative;
+
+            background: #020617;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            min-height: 400px;
+        }
+
+
+        #video {
+            width: 100%;
+
+            height: 480px;
+
+            display: block;
+
+            object-fit: cover;
+
+            background: #020617;
+        }
+
+
+        .camera-label {
+            position: absolute;
+
+            top: 15px;
+
+            left: 15px;
+
+            z-index: 5;
+
+            background:
+                rgba(0, 0, 0, 0.65);
+
+            color: white;
+
+            padding: 8px 13px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        /* ==============================
+           SCANNING LINE
+        ============================== */
+
+        #scanLine {
+            position: absolute;
+
+            left: 8%;
+
+            right: 8%;
+
+            top: 15%;
+
+            height: 2px;
+
+            display: none;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 15px
+                #22c55e;
+
+            z-index: 4;
+        }
+
+
+        #scanLine.active {
+            display: block;
+
+            animation:
+                scanning
+                2s
+                linear
+                infinite;
+        }
+
+
+        @keyframes scanning {
+
+            0% {
+                top: 15%;
+            }
+
+            50% {
+                top: 85%;
+            }
+
+            100% {
+                top: 15%;
+            }
+
+        }
+
+
+        /* ==============================
+           STATUS
+        ============================== */
+
+        .camera-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+
+        #cameraStatus {
+            font-weight: 700;
+
+            color: #64748b;
+        }
+
+
+        #cameraStatus.live {
+            color: #16a34a;
+        }
+
+
+        .counter {
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        /* ==============================
+           RESULT
+        ============================== */
+
+        #result {
+            margin-top: 15px;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #f1f5f9;
+
+            min-height: 50px;
+
+            display: flex;
+
+            align-items: center;
+        }
+
+
+        #result.success {
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+
+        #result.warning {
+            background: #fef3c7;
+
+            color: #92400e;
+        }
+
+
+        #result.info {
+            background: #dbeafe;
+
+            color: #1e40af;
+        }
+
+
+        #result.error {
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+
+        /* ==============================
+           BUTTONS
+        ============================== */
+
+        .buttons {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+
+        button {
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 12px 18px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            background: #2563eb;
+
+            color: white;
+
+            transition:
+                transform 0.15s,
+                box-shadow 0.15s,
+                opacity 0.15s;
+        }
+
+
+        button:hover:not(:disabled) {
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 5px 14px
+                rgba(37, 99, 235, 0.25);
+        }
+
+
+        button:disabled {
+            opacity: 0.5;
+
+            cursor: not-allowed;
+        }
+
+
+        #stopButton {
+            background: #dc2626;
+        }
+
+
+        /* ==============================
+           BIG COUNTER
+        ============================== */
+
+        .big-number {
+            font-size: 52px;
+
+            font-weight: 800;
+
+            line-height: 1;
+        }
+
+
+        .total-number {
+            font-size: 25px;
+
+            color: #64748b;
+        }
+
+
+        /* ==============================
+           PROGRESS
+        ============================== */
+
+        .progress-container {
+            height: 14px;
+
+            width: 100%;
+
+            background: #e2e8f0;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            margin: 18px 0;
+        }
+
+
+        #progressBar {
+            height: 100%;
+
+            width: 0%;
+
+            background: #2563eb;
+
+            border-radius: 20px;
+
+            transition:
+                width 0.4s ease;
+        }
+
+
+        #remainingText {
+            color: #64748b;
+
+            margin-bottom: 0;
+        }
+
+
+        /* ==============================
+           RECENT RECORDS
+        ============================== */
+
+        .records {
+            max-height: 430px;
+
+            overflow-y: auto;
+
+            margin-top: 15px;
+        }
+
+
+        .record {
+            padding: 12px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+        }
+
+
+        .record-name {
+            font-weight: 700;
+        }
+
+
+        .record-time {
+            font-size: 12px;
+
+            color: #64748b;
+
+            margin-top: 4px;
+        }
+
+
+        .empty {
+            color: #64748b;
+
+            text-align: center;
+
+            padding: 30px 10px;
+        }
+
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (max-width: 900px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            #video {
+                height: 400px;
+            }
+
+
+            nav {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .container {
+                width:
+                    calc(100% - 20px);
+
+                margin:
+                    15px auto;
+            }
+
+
+            .card {
+                padding: 15px;
+            }
+
+
+            #video {
+                height: 300px;
+            }
+
+
+            h1 {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     NAVIGATION
+========================================== -->
+
+<nav>
+
+    <div class="brand">
+        Smart Attendance
+    </div>
+
+
+    <div class="links">
+
+        <a href="{{ url_for('dashboard.index') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('students.index') }}">
+            Students
+        </a>
+
+        <a href="{{ url_for('attendance.index') }}">
+            Attendance
+        </a>
+
+        {% if current_user.is_authenticated and current_user.is_admin %}
+
+        <a href="{{ url_for('admin.index') }}">
+            Admin
+        </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ==========================================
+     MAIN CONTENT
+========================================== -->
+
+<div class="container">
+
+
+    <h1>
+        📷 Continuous Attendance
+    </h1>
+
+
+    <p class="subtitle">
+        Start the camera once and keep scanning students continuously.
+    </p>
+
+
+    <div class="grid">
+
+
+        <!-- ====================================
+             CAMERA CARD
+        ==================================== -->
+
+        <div class="card">
+
+
+            <div class="camera-header">
+
+                <span id="cameraStatus">
+                    ● OFFLINE
+                </span>
+
+
+                <span
+                    class="counter"
+                    id="topCounter"
+                >
+                    {{ present_count }}
+                    /
+                    {{ total_students }}
+                    Present
+                </span>
+
+            </div>
+
+
+            <div class="camera-box">
+
+
+                <div class="camera-label">
+                    FACE RECOGNITION
+                </div>
+
+
+                <video
+                    id="video"
+                    autoplay
+                    playsinline
+                    muted
+                ></video>
+
+
+                <div
+                    id="scanLine"
+                ></div>
+
+            </div>
+
+
+            <canvas
+                id="canvas"
+                style="display:none;"
+            ></canvas>
+
+
+            <!-- RESULT -->
+
+            <div id="result">
+                Press
+                <strong style="margin-left:5px;">
+                    Start Attendance
+                </strong>
+                to begin.
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="buttons">
+
+                <button
+                    id="startButton"
+                    type="button"
+                    onclick="startAttendance()"
+                >
+                    ▶ Start Attendance
+                </button>
+
+
+                <button
+                    id="stopButton"
+                    type="button"
+                    onclick="stopAttendance()"
+                    disabled
+                >
+                    ■ Stop Camera
+                </button>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ====================================
+             RIGHT SIDE
+        ==================================== -->
+
+        <div>
+
+
+            <!-- ATTENDANCE COUNTER -->
+
+            <div class="card">
+
+
+                <h2>
+                    Today's Attendance
+                </h2>
+
+
+                <div>
+
+                    <span
+                        class="big-number"
+                        id="presentCount"
+                    >
+                        {{ present_count }}
+                    </span>
+
+
+                    <span class="total-number">
+                        /
+                        {{ total_students }}
+                    </span>
+
+                </div>
+
+
+                <div class="progress-container">
+
+                    <div
+                        id="progressBar"
+                        style="
+                            width:
+                            {% if total_students > 0 %}
+                                {{ (present_count / total_students * 100)|round|int }}
+                            {% else %}
+                                0
+                            {% endif %}%;
+                        "
+                    ></div>
+
+                </div>
+
+
+                <p id="remainingText">
+
+                    {% if total_students > present_count %}
+
+                        {{ total_students - present_count }}
+                        students remaining.
+
+                    {% else %}
+
+                        🎉 All students marked present.
+
+                    {% endif %}
+
+                </p>
+
+
+            </div>
+
+
+            <!-- RECENT ATTENDANCE -->
+
+            <div
+                class="card"
+                style="margin-top:20px;"
+            >
+
+
+                <h2>
+                    Recently Present
+                </h2>
+
+
+                <div
+                    class="records"
+                    id="records"
+                >
+
+                    {% if records %}
+
+                        {% for record in records %}
+
+                            <div class="record">
+
+                                <div class="record-name">
+
+                                    {{ record.student.name }}
+
+                                </div>
+
+
+                                <div class="record-time">
+
+                                    {{ record.student.student_id }}
+
+                                    -
+
+                                    {{ record.time.strftime('%H:%M:%S') }}
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <div
+                            class="empty"
+                            id="emptyRecords"
+                        >
+                            No attendance recorded yet.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+// ============================================================
+// VARIABLES
+// ============================================================
+
+let cameraStream = null;
+
+let attendanceRunning = false;
+
+let scanTimer = null;
+
+let scanBusy = false;
+
+let scanInterval = 900;
+
+
+const video =
+    document.getElementById(
+        "video"
+    );
+
+
+const canvas =
+    document.getElementById(
+        "canvas"
+    );
+
+
+const result =
+    document.getElementById(
+        "result"
+    );
+
+
+const cameraStatus =
+    document.getElementById(
+        "cameraStatus"
+    );
+
+
+const scanLine =
+    document.getElementById(
+        "scanLine"
+    );
+
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+
+const stopButton =
+    document.getElementById(
+        "stopButton"
+    );
+
+
+const presentCount =
+    document.getElementById(
+        "presentCount"
+    );
+
+
+const topCounter =
+    document.getElementById(
+        "topCounter"
+    );
+
+
+const progressBar =
+    document.getElementById(
+        "progressBar"
+    );
+
+
+const remainingText =
+    document.getElementById(
+        "remainingText"
+    );
+
+
+const records =
+    document.getElementById(
+        "records"
+    );
+
+
+const totalStudents =
+    Number(
+        {{ total_students }}
+    );
+
+
+let currentPresent =
+    Number(
+        {{ present_count }}
+    );
+
+
+// ============================================================
+// ATTENDANCE URL
+// ============================================================
+
+const recognizeUrl =
+    "{{ url_for('attendance.recognize') }}";
+
+
+// ============================================================
+// START ATTENDANCE
+// ============================================================
+
+async function startAttendance() {
+
+    try {
+
+        result.className = "";
+
+        result.textContent =
+            "Requesting camera permission...";
+
+
+        cameraStream =
+            await navigator
+            .mediaDevices
+            .getUserMedia({
+
+                video: {
+
+                    width: {
+                        ideal: 640
+                    },
+
+                    height: {
+                        ideal: 480
+                    },
+
+                    facingMode: "user"
+
+                },
+
+                audio: false
+
+            });
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        attendanceRunning =
+            true;
+
+
+        startButton.disabled =
+            true;
+
+
+        stopButton.disabled =
+            false;
+
+
+        cameraStatus.textContent =
+            "● LIVE";
+
+
+        cameraStatus.classList.add(
+            "live"
+        );
+
+
+        scanLine.classList.add(
+            "active"
+        );
+
+
+        result.className =
+            "info";
+
+
+        result.textContent =
+            "✓ Camera started. Scanning continuously...";
+
+
+        // Start immediately
+
+        scanLoop();
+
+
+    } catch (error) {
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+
+        result.className =
+            "error";
+
+
+        result.textContent =
+            "Camera error: " +
+            error.message;
+
+
+        stopAttendance();
+
+    }
+
+}
+
+
+// ============================================================
+// STOP ATTENDANCE
+// ============================================================
+
+function stopAttendance() {
+
+    attendanceRunning =
+        false;
+
+
+    if (scanTimer !== null) {
+
+        clearTimeout(
+            scanTimer
+        );
+
+        scanTimer =
+            null;
+
+    }
+
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                function(track) {
+
+                    track.stop();
+
+                }
+            );
+
+    }
+
+
+    cameraStream =
+        null;
+
+
+    video.srcObject =
+        null;
+
+
+    startButton.disabled =
+        false;
+
+
+    stopButton.disabled =
+        true;
+
+
+    cameraStatus.textContent =
+        "● OFFLINE";
+
+
+    cameraStatus.classList.remove(
+        "live"
+    );
+
+
+    scanLine.classList.remove(
+        "active"
+    );
+
+}
+
+
+// ============================================================
+// CONTINUOUS SCAN LOOP
+// ============================================================
+
+async function scanLoop() {
+
+    if (!attendanceRunning) {
+
+        return;
+
+    }
+
+
+    if (
+        !scanBusy &&
+        video.readyState >= 2 &&
+        video.videoWidth > 0
+    ) {
+
+        await scanFrame();
+
+    }
+
+
+    if (attendanceRunning) {
+
+        scanTimer =
+            setTimeout(
+                scanLoop,
+                scanInterval
+            );
+
+    }
+
+}
+
+
+// ============================================================
+// CAPTURE FRAME
+// ============================================================
+
+function scanFrame() {
+
+    return new Promise(
+        function(resolve) {
+
+            if (scanBusy) {
+
+                resolve();
+
+                return;
+
+            }
+
+
+            scanBusy =
+                true;
+
+
+            canvas.width =
+                video.videoWidth;
+
+
+            canvas.height =
+                video.videoHeight;
+
+
+            const context =
+                canvas.getContext(
+                    "2d"
+                );
+
+
+            context.drawImage(
+
+                video,
+
+                0,
+                0,
+
+                canvas.width,
+                canvas.height
+
+            );
+
+
+            canvas.toBlob(
+
+                async function(blob) {
+
+                    try {
+
+                        if (!blob) {
+
+                            throw new Error(
+                                "Could not capture camera frame."
+                            );
+
+                        }
+
+
+                        const formData =
+                            new FormData();
+
+
+                        formData.append(
+                            "image",
+                            blob,
+                            "attendance.jpg"
+                        );
+
+
+                        const response =
+                            await fetch(
+                                recognizeUrl,
+                                {
+                                    method:
+                                        "POST",
+
+                                    body:
+                                        formData
+                                }
+                            );
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                "Server returned HTTP " +
+                                response.status
+                            );
+
+                        }
+
+
+                        const data =
+                            await response.json();
+
+
+                        handleRecognition(
+                            data
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Recognition error:",
+                            error
+                        );
+
+
+                        result.className =
+                            "error";
+
+
+                        result.textContent =
+                            "Connection/recognition error. Retrying...";
+
+
+                    } finally {
+
+                        scanBusy =
+                            false;
+
+
+                        resolve();
+
+                    }
+
+                },
+
+                "image/jpeg",
+
+                0.82
+
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// HANDLE SERVER RESPONSE
+// ============================================================
+
+function handleRecognition(
+    data
+) {
+
+    result.textContent =
+        data.message ||
+        "Scanning...";
+
+
+    // Student successfully marked
+
+    if (data.marked) {
+
+        result.className =
+            "success";
+
+
+        updateCounters(
+            data.present_count,
+            data.total_students
+        );
+
+
+        addAttendanceRecord(
+            data.student_name
+        );
+
+
+        return;
+
+    }
+
+
+    // Already present
+
+    if (data.already_present) {
+
+        result.className =
+            "info";
+
+
+        return;
+
+    }
+
+
+    // Multi-frame confirmation
+
+    if (data.confirmations) {
+
+        result.className =
+            "warning";
+
+
+        return;
+
+    }
+
+
+    // Normal scanning
+
+    result.className =
+        "";
+
+}
+
+
+// ============================================================
+// UPDATE COUNTERS
+// ============================================================
+
+function updateCounters(
+    present,
+    total
+) {
+
+    currentPresent =
+        Number(present);
+
+
+    presentCount.textContent =
+        currentPresent;
+
+
+    topCounter.textContent =
+        currentPresent +
+        " / " +
+        total +
+        " Present";
+
+
+    let percentage =
+        0;
+
+
+    if (Number(total) > 0) {
+
+        percentage =
+            (
+                currentPresent /
+                Number(total)
+            ) *
+            100;
+
+    }
+
+
+    progressBar.style.width =
+        percentage + "%";
+
+
+    const remaining =
+        Number(total) -
+        currentPresent;
+
+
+    if (remaining > 0) {
+
+        remainingText.textContent =
+            remaining +
+            " students remaining.";
+
+    } else {
+
+        remainingText.textContent =
+            "🎉 All students marked present.";
+
+    }
+
+}
+
+
+// ============================================================
+// ADD ATTENDANCE RECORD
+// ============================================================
+
+function addAttendanceRecord(
+    studentName
+) {
+
+    const empty =
+        document.getElementById(
+            "emptyRecords"
+        );
+
+
+    if (empty) {
+
+        empty.remove();
+
+    }
+
+
+    const record =
+        document.createElement(
+            "div"
+        );
+
+
+    record.className =
+        "record";
+
+
+    record.innerHTML =
+        `
+        <div class="record-name">
+            ${escapeHtml(studentName)}
+        </div>
+
+        <div class="record-time">
+            JUST MARKED
+        </div>
+        `;
+
+
+    records.prepend(
+        record
+    );
+
+}
+
+
+// ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value
+    ).replace(
+        /[&<>'"]/g,
+
+        function(character) {
+
+            const map = {
+
+                "&":
+                    "&amp;",
+
+                "<":
+                    "&lt;",
+
+                ">":
+                    "&gt;",
+
+                "'":
+                    "&#039;",
+
+                '"':
+                    "&quot;"
+
+            };
+
+
+            return map[
+                character
+            ];
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// CLEANUP
+// ============================================================
+
+window.addEventListener(
+    "beforeunload",
+    function() {
+
+        stopAttendance();
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Edit Student - Smart Attendance
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/style.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVIGATION
+====================================================== -->
+
+<nav>
+
+    <h2>
+        Smart Attendance
+    </h2>
+
+
+    <div>
+
+        <a
+            href="{{ url_for('dashboard.index') }}"
+        >
+            Dashboard
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a
+            href="{{ url_for('students.index') }}"
+        >
+            Students
+        </a>
+
+        &nbsp;&nbsp;
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =====================================================
+     EDIT FORM
+====================================================== -->
+
+<div class="dashboard">
+
+
+    <div class="card form-card">
+
+
+        <h1>
+            Edit Student
+        </h1>
+
+
+        <p>
+            Correct or update the student's information.
+        </p>
+
+
+        <form
+            method="POST"
+        >
+
+
+            <!-- STUDENT ID -->
+
+            <label>
+                Student ID *
+            </label>
+
+
+            <input
+                type="text"
+                name="student_id"
+                value="{{ student.student_id }}"
+                required
+            >
+
+
+
+            <!-- NAME -->
+
+            <label>
+                Student Name *
+            </label>
+
+
+            <input
+                type="text"
+                name="name"
+                value="{{ student.name }}"
+                required
+            >
+
+
+
+            <!-- EMAIL -->
+
+            <label>
+                Email
+            </label>
+
+
+            <input
+                type="email"
+                name="email"
+                value="{{ student.email or '' }}"
+            >
+
+
+
+            <!-- PHONE -->
+
+            <label>
+                Phone
+            </label>
+
+
+            <input
+                type="text"
+                name="phone"
+                value="{{ student.phone or '' }}"
+            >
+
+
+
+            <!-- COURSE -->
+
+            <label>
+                Course
+            </label>
+
+
+            <input
+                type="text"
+                name="course"
+                value="{{ student.course or '' }}"
+            >
+
+
+
+            <!-- SEMESTER -->
+
+            <label>
+                Semester
+            </label>
+
+
+            <input
+                type="text"
+                name="semester"
+                value="{{ student.semester or '' }}"
+            >
+
+
+
+            <!-- DIVISION -->
+
+            <label>
+                Division
+            </label>
+
+
+            <input
+                type="text"
+                name="division"
+                value="{{ student.division or '' }}"
+            >
+
+
+
+            <!-- BUTTONS -->
+
+            <div class="form-buttons">
+
+
+                <a
+                    href="{{ url_for(
+                        'students.index'
+                    ) }}"
+                >
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                    >
+                        Cancel
+                    </button>
+
+                </a>
+
+
+                <button
+                    type="submit"
+                >
+                    Save Changes
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

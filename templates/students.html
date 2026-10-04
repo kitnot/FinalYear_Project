@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Students - Smart Attendance
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37, 99, 235, 0.12),
+                    transparent 35%
+                ),
+                #f4f7fb;
+
+            color: #0f172a;
+        }
+
+
+        /* ==============================
+           NAVBAR
+        ============================== */
+
+        nav {
+            background: #0f172a;
+
+            padding: 16px 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            box-shadow:
+                0 4px 18px
+                rgba(0, 0, 0, 0.18);
+        }
+
+
+        .brand {
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+
+        .nav-links {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+        }
+
+
+        .nav-links a {
+            color: white;
+
+            text-decoration: none;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+        }
+
+
+        .nav-links a:hover {
+            background:
+                rgba(255,255,255,0.12);
+        }
+
+
+        /* ==============================
+           MAIN
+        ============================== */
+
+        .container {
+            width: min(
+                1400px,
+                calc(100% - 40px)
+            );
+
+            margin: 30px auto;
+        }
+
+
+        h1 {
+            margin: 0;
+
+            font-size: 32px;
+        }
+
+
+        .subtitle {
+            color: #64748b;
+
+            margin-top: 8px;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* ==============================
+           CARDS
+        ============================== */
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(15,23,42,0.08);
+
+            animation:
+                pageEnter
+                0.35s
+                ease;
+        }
+
+
+        @keyframes pageEnter {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+
+        }
+
+
+        /* ==============================
+           HEADER
+        ============================== */
+
+        .page-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .actions {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 10px;
+        }
+
+
+        /* ==============================
+           BUTTONS
+        ============================== */
+
+        .button {
+            display: inline-block;
+
+            padding: 11px 16px;
+
+            border-radius: 8px;
+
+            border: none;
+
+            text-decoration: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s,
+                box-shadow 0.15s;
+        }
+
+
+        .button:hover {
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 5px 14px
+                rgba(37,99,235,0.25);
+        }
+
+
+        .button.green {
+            background: #16a34a;
+        }
+
+
+        .button.dark {
+            background: #0f172a;
+        }
+
+
+        .button.red {
+            background: #dc2626;
+        }
+
+
+        .button.gray {
+            background: #64748b;
+        }
+
+
+        /* ==============================
+           SEARCH
+        ============================== */
+
+        .search-box {
+            width: 100%;
+
+            max-width: 550px;
+
+            padding: 13px 15px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+
+        .search-box:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37,99,235,0.12);
+        }
+
+
+        /* ==============================
+           TABLE
+        ============================== */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+        }
+
+
+        th {
+            text-align: left;
+
+            background: #f8fafc;
+
+            padding: 14px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+
+            font-size: 14px;
+        }
+
+
+        td {
+            padding: 14px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+
+            font-size: 14px;
+        }
+
+
+        tbody tr {
+            transition:
+                background 0.2s;
+        }
+
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+
+        .student-id {
+            font-weight: 700;
+
+            color: #2563eb;
+        }
+
+
+        .action-buttons {
+            display: flex;
+
+            gap: 6px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .small-button {
+            display: inline-block;
+
+            padding: 7px 10px;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            border: none;
+
+            color: white;
+
+            background: #2563eb;
+
+            font-size: 12px;
+
+            cursor: pointer;
+        }
+
+
+        .small-button.green {
+            background: #16a34a;
+        }
+
+
+        .small-button.red {
+            background: #dc2626;
+        }
+
+
+        .small-button.gray {
+            background: #64748b;
+        }
+
+
+        /* ==============================
+           FLASH
+        ============================== */
+
+        .flash {
+            padding: 13px 16px;
+
+            margin-bottom: 15px;
+
+            background: #dbeafe;
+
+            color: #1e40af;
+
+            border-radius: 9px;
+
+            animation:
+                pageEnter
+                0.3s
+                ease;
+        }
+
+
+        /* ==============================
+           EMPTY
+        ============================== */
+
+        .empty {
+            text-align: center;
+
+            padding: 50px 20px;
+
+            color: #64748b;
+        }
+
+
+        .empty-icon {
+            font-size: 45px;
+
+            margin-bottom: 10px;
+        }
+
+
+        /* ==============================
+           RESPONSIVE
+        ============================== */
+
+        @media (max-width: 700px) {
+
+            .container {
+                width:
+                    calc(100% - 20px);
+
+                margin: 15px auto;
+            }
+
+
+            nav {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            h1 {
+                font-size: 26px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     NAVIGATION
+========================================== -->
+
+<nav>
+
+    <div class="brand">
+        Smart Attendance
+    </div>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('dashboard.index') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('students.index') }}">
+            Students
+        </a>
+
+        <a href="{{ url_for('attendance.index') }}">
+            Attendance
+        </a>
+
+        {% if current_user.is_authenticated and current_user.is_admin %}
+
+        <a href="{{ url_for('admin.index') }}">
+            Admin
+        </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('auth.logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
+
+<div class="container">
+
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h1>
+                👥 Students
+            </h1>
+
+            <p class="subtitle">
+                Manage your complete class.
+            </p>
+
+        </div>
+
+
+        <div class="actions">
+
+            <a
+                class="button green"
+                href="{{ url_for('students.import_class') }}"
+            >
+                📥 Import Class
+            </a>
+
+
+            <a
+                class="button dark"
+                href="{{ url_for(
+                    'students.batch_face_registration'
+                ) }}"
+            >
+                👤 Batch Face Registration
+            </a>
+
+
+            <a
+                class="button"
+                href="{{ url_for(
+                    'students.add_student'
+                ) }}"
+            >
+                + Add Student
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- FLASH MESSAGES -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="flash">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- SEARCH -->
+
+    <div class="card">
+
+        <h2>
+            🔎 Search Students
+        </h2>
+
+        <input
+            id="studentSearch"
+            class="search-box"
+            type="text"
+            placeholder="Search by Student ID, name, course or division..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <!-- STUDENT TABLE -->
+
+    <div class="card">
+
+        <div class="table-wrapper">
+
+            <table id="studentTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student ID
+                        </th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Course
+                        </th>
+
+                        <th>
+                            Semester
+                        </th>
+
+                        <th>
+                            Division
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="studentTableBody">
+
+
+                {% for student in students %}
+
+                    <tr>
+
+                        <td>
+
+                            <span class="student-id">
+
+                                {{ student.student_id }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+
+                                {{ student.name }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ student.email or "-" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ student.course or "-" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ student.semester or "-" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ student.division or "-" }}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="action-buttons">
+
+
+                                <!-- EDIT -->
+
+                                <a
+                                    class="small-button"
+                                    href="{{ url_for(
+                                        'students.edit_student',
+                                        student_id=student.id
+                                    ) }}"
+                                >
+                                    Edit
+                                </a>
+
+
+                                <!-- FACE -->
+
+                                <a
+                                    class="small-button green"
+                                    href="{{ url_for(
+                                        'students.register_face',
+                                        student_id=student.id
+                                    ) }}"
+                                >
+                                    Face
+                                </a>
+
+
+                                <!-- DELETE -->
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for(
+                                        'students.delete_student',
+                                        student_id=student.id
+                                    ) }}"
+                                    style="display:inline;"
+                                    onsubmit="
+                                        return confirm(
+                                            'Are you sure you want to delete {{ student.name }}? This will also delete the student attendance and face data.'
+                                        );
+                                    "
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="small-button red"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </form>
+
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                        >
+
+                            <div class="empty">
+
+                                <div class="empty-icon">
+                                    👥
+                                </div>
+
+                                <strong>
+                                    No students found
+                                </strong>
+
+                                <p>
+                                    Add a student or import your complete class.
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ==========================================
+     SEARCH SCRIPT
+========================================== -->
+
+<script>
+
+const searchInput =
+    document.getElementById(
+        "studentSearch"
+    );
+
+
+const tableBody =
+    document.getElementById(
+        "studentTableBody"
+    );
+
+
+searchInput.addEventListener(
+    "input",
+    function() {
+
+        const search =
+            this.value
+                .toLowerCase()
+                .trim();
+
+
+        const rows =
+            tableBody.querySelectorAll(
+                "tr"
+            );
+
+
+        rows.forEach(
+            function(row) {
+
+                const text =
+                    row.textContent
+                        .toLowerCase();
+
+
+                if (
+                    text.includes(
+                        search
+                    )
+                ) {
+
+                    row.style.display =
+                        "";
+
+                } else {
+
+                    row.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

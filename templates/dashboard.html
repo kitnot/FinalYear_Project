@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dashboard - Smart Attendance
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/style.css'
+        ) }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVIGATION
+====================================================== -->
+
+<nav>
+
+    <h2>
+        Smart Attendance
+    </h2>
+
+
+    <div>
+
+        <a
+            href="{{ url_for('dashboard.index') }}"
+        >
+            Dashboard
+        </a>
+
+
+        &nbsp;&nbsp;
+
+
+        <a
+            href="{{ url_for('students.index') }}"
+        >
+            Students
+        </a>
+
+
+        &nbsp;&nbsp;
+
+
+        <a
+            href="{{ url_for('attendance.index') }}"
+        >
+            Attendance
+        </a>
+
+
+        &nbsp;&nbsp;
+
+
+        <a
+            href="{{ url_for('auth.logout') }}"
+        >
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- =====================================================
+     MAIN DASHBOARD
+====================================================== -->
+
+<div class="dashboard">
+
+
+    <h1>
+        Dashboard
+    </h1>
+
+
+
+    <!-- =================================================
+         STATISTICS
+    ================================================== -->
+
+    <div class="cards">
+
+
+        <!-- TOTAL STUDENTS -->
+
+        <div class="card stat-card">
+
+            <div class="stat-title">
+                Total Students
+            </div>
+
+
+            <div class="stat-number">
+                {{ total_students }}
+            </div>
+
+        </div>
+
+
+
+        <!-- PRESENT -->
+
+        <div class="card stat-card">
+
+            <div class="stat-title">
+                Present Today
+            </div>
+
+
+            <div class="stat-number">
+                {{ present_today }}
+            </div>
+
+        </div>
+
+
+
+        <!-- ABSENT -->
+
+        <div class="card stat-card">
+
+            <div class="stat-title">
+                Absent Today
+            </div>
+
+
+            <div class="stat-number">
+                {{ absent_today }}
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         MAIN ACTIONS
+    ================================================== -->
+
+    <div
+        style="
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        "
+    >
+
+
+        <!-- STUDENT MANAGEMENT -->
+
+        <div class="card">
+
+            <h2>
+                Student Management
+            </h2>
+
+
+            <p>
+                Add students and register their
+                facial recognition data.
+            </p>
+
+
+            <a
+                href="{{ url_for('students.index') }}"
+            >
+
+                <button>
+                    Manage Students
+                </button>
+
+            </a>
+
+        </div>
+
+
+
+        <!-- LIVE ATTENDANCE -->
+
+        <div class="card">
+
+            <h2>
+                Live Attendance
+            </h2>
+
+
+            <p>
+                Start the webcam and automatically
+                recognize students.
+            </p>
+
+
+            <a
+                href="{{ url_for('attendance.index') }}"
+            >
+
+                <button>
+                    Start Attendance
+                </button>
+
+            </a>
+
+        </div>
+
+
+    </div>
+
+    {% if current_user.is_admin %}
+
+<div class="card">
+
+    <h2>
+        Administration
+    </h2>
+
+    <p>
+        Manage staff accounts, roles and access.
+    </p>
+
+    <a
+        href="{{ url_for('admin.index') }}"
+    >
+
+        <button>
+            Admin Control
+        </button>
+
+    </a>
+
+</div>
+
+{% endif %}
+
+
+    <!-- =================================================
+         TODAY'S ATTENDANCE
+    ================================================== -->
+
+    <div class="card">
+
+
+        <h2>
+            Today's Attendance
+        </h2>
+
+
+
+        {% if recent_attendance %}
+
+
+        <div class="table-container">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student ID
+                        </th>
+
+
+                        <th>
+                            Time
+                        </th>
+
+
+                        <th>
+                            Status
+                        </th>
+
+
+                        <th>
+                            Confidence
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for record in recent_attendance %}
+
+
+                    <tr>
+
+
+                        <td>
+                            {{ record.student_id }}
+                        </td>
+
+
+                        <td>
+                            {{ record.time }}
+                        </td>
+
+
+                        <td>
+                            {{ record.status }}
+                        </td>
+
+
+                        <td>
+
+                            {% if record.confidence %}
+
+                                {{ "%.2f"|format(
+                                    record.confidence
+                                ) }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="empty-state">
+
+            <p>
+                No attendance has been recorded today.
+            </p>
+
+
+            <a
+                href="{{ url_for('attendance.index') }}"
+            >
+
+                <button>
+                    Start Attendance
+                </button>
+
+            </a>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         SYSTEM INFORMATION
+    ================================================== -->
+
+    <div class="card">
+
+
+        <h2>
+            System Information
+        </h2>
+
+
+        <p>
+            Facial Recognition:
+            <strong>
+                Active
+            </strong>
+        </p>
+
+
+        <p>
+            Database:
+            <strong>
+                SQLite
+            </strong>
+        </p>
+
+
+        <p>
+            Face Detection:
+            <strong>
+                YuNet
+            </strong>
+        </p>
+
+
+        <p>
+            Face Recognition:
+            <strong>
+                SFace
+            </strong>
+        </p>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
